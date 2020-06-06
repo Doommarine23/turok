@@ -79,6 +79,8 @@
 <h3 id="Music">Music</h3>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>PlayMusic</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>path</em>, <!--const -->bool <em>bLoop</em> )</h4>
+<p>Plays music from specific filepath, with optional looping. Existing sector music seems to overwrite this function when tested on an actor.</p>
+<p>e.g., <code>Game.PlayMusic("music/track14.ogg", true);</code></p>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>StopMusic</strong>()</h4>
 
@@ -95,9 +97,11 @@
 <h3 id="Text">Text</h3>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>PrintLine</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>msg</em>, <!--const -->int <em>lineNum</em>, <!--const -->int <em class="hasDef">ticks</em> = <em class="defVal">120</em> )</h4>
-
+<p>Prints a message to the screen with its line and duration specified. It can also use predefined strings as text. </p>
+<p>e.g., <code>Game.PrintLine("$str_178", 1, 512);</code></p>
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>PrintHelp</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>msg</em>, <!--const -->bool <em class="hasDef">bEndGame</em> = <em class="defVal">false</em> )</h4>
-
+<p>Prints a message similar to PrintLine but inside a small box. Used in Tutorial level. Also accepts predefined strings.</p>
+<p>e.g., <code>Game.PrintHelp("$str_174");</code></p>
 <h4 class="funcDec"><a href="kStr.html">kStr</a> <strong>GetLocalizedText</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>key</em> )</h4>
 
 

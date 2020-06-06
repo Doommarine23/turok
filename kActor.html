@@ -131,6 +131,11 @@
 	</li>
 	<li>
 		<span>AF_CASTSHADOW</span>
+		<span>&ndash;</span>
+		<span>
+			Enables or disables simple circular shadow beneath actor. <br>
+			initialized by "Cast Shadow" in Spawn Flags 1
+		</span>
 	</li>
 	<li>
 		<span>AF_TRIGGERSTUFF</span>
@@ -158,6 +163,11 @@
 	</li>
 	<li>
 		<span>AF_NOBLOOD</span>
+		<span>&ndash;</span>
+		<span>
+			Checked in "void BloodGush" in "enemy/enemy.txt" script to prevent blood splatter on hit. <br>
+			initialized by "No Blood" in Spawn Flags 2
+		</span>
 	</li>
 	<li>
 		<span>AF_AVOIDWATER</span>
@@ -186,6 +196,9 @@
 	</li>
 	<li>
 		<span>AF_NODRAW</span>
+		<span>&ndash;</span>
+		<span>
+			Prevents actor from being rendered. Used in "defs/player.txt" to hide player model. <br>
 	</li>
 	<li>
 		<span>AF_NONSHOOTABLE</span>
@@ -227,6 +240,9 @@
 	</li>
 	<li>
 		<span>AF_NOMOVEMENT</span>
+		<span>&ndash;</span>
+		<span>
+			Prevents all movement from actor, even actors killed by explosions. <br>
 	</li>
 </ul>
 <aside>During the "native" step of <a href="ScriptObject.html#Initialization">initialization</a>, an actor's flags are bitwise or'd with its initial settings.  This means that, before they are initialized, flags can be set, but not cleared.</aside>
@@ -580,6 +596,7 @@
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>PlaySoundWithLookupID</strong>( <!--const -->int <em>ID</em> )</h4>
 <p>play a sound by ID number, as defined in defs/fileLookup.txt</p>
+<p>e.g., <code>self.PlaySoundWithLookupID(55);</code></p>
 
 <div id="stopping_sounds"><!-- for linking to sound-stopping functions as a whole -->
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>StopSound</strong>()</h4>
