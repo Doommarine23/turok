@@ -27,7 +27,12 @@
 
 <p>kDictMems are used for storing <a href="defs.html#damageInfo">damage type</a> properties.</p>
 
-<p>There is a global kDict, <code>GameVariables</code>, for storing persistent, per-save data, like collected chronosceptor pieces.</p>
+<p id="GameVariables">There is a global kDict, <code>GameVariables</code>, for storing persistent, per-save data, like collected chronosceptor pieces.</p>
+
+<aside class="unimportant">
+	<p><span class="v1">1.x</span> Before the 2.0 update, loading a save would iterate through all keys in the <code>GameVariables</code>, and set their values to those in the save's version.  If a key did not exist in the save file, its current value would not be removed from <code>GameVariables</code>.  If a key existed in the save file, but not in the current <code>GameVariables</code>, it would not be added.</p>
+	<p><span class="v2">2.0</span> After the 2.0 update, it seems that the entire kDict is simply replaced with the save's version.</p>
+</aside>
 
 
 <h3 id="Methods">Methods</h3>
@@ -38,11 +43,11 @@
 <h4 class="funcDec collapse">bool <strong>GetString</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>key</em>, <a href="kStr.html">kStr</a>&amp;<!--out--> <em>val</em> )</h4>
 <h4 class="funcDec">bool <strong>GetVector</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>key</em>, <a href="kVec3.html">kVec3</a>&amp;<!--out--> <em>val</em> )</h4>
 <p>look up <code>key</code></p>
-<p>if it exists, parse its associated string and store the result in <code>val</code>, otherwise store <code>default</code></p>
+<p>if it exists, parse its associated string and store the result in <code>val</code>, otherwise store <code>default</code><br>(the string and vector versions default to <code>""</code> and <code>(0,0,0)</code>, respectively)</p>
 <p>return whether <code>key</code> was found</p>
 
 
-<h3>kDict</h3>
+<h3 id="kDict">kDict</h3>
 
 <p>These methods are exclusive to kDict.</p>
 

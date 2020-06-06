@@ -33,6 +33,19 @@
 		{
 			content: ":";
 		}
+		.SpawnFlags
+		{
+			display: inline-block;
+		}
+		.SpawnFlags h4
+		{
+			margin-bottom: -0.25em;
+		}
+		.SpawnFlags ul
+		{
+			font-size: 80%; /* make sure all 3 fit side-by-side */
+			margin-right: 1em;
+		}
 	</style>
 </head>
 <body>
@@ -76,17 +89,23 @@
 <aside>note that, counterintuitively, <code>MarkPersistentBit()</code> is passed <code>false</code> to mark the bit, and <code>true</code> to unmark it</aside>
 </div>
 
-<h4 class="funcDec"><a href="kDictMem.html">kDictMem</a>@ <strong>Definition</strong>()</h4>
-<h4 class="funcDec">kActor@ <strong>CastToActor</strong>()</h4>
-<h4 class="funcDec"><a href="kAI.html">kAI</a>@ <strong>CastToAI</strong>()</h4>
-<h4 class="funcDec">int&amp; <strong>Type</strong>()</h4>
-
 <h4 id="TID" class="funcDec"><!--const -->int <strong>TID</strong>()</h4>
 <p>actor tag ID</p>
 
-<h4 class="funcDec">kScriptObject@ <strong>ScriptObject</strong>()</h4>
+<h4 id="ScriptObject" class="funcDec"><a href="kScriptObject.html">kScriptObject</a>@ <strong>ScriptObject</strong>()</h4>
+<p>returns a wrapper for the <a href="ScriptObject.html">user script object</a> this actor is associated with</p>
+
+<h4 class="funcDec"><a href="kDictMem.html">kDictMem</a>@ <strong>Definition</strong>()</h4>
+
+<h4 id="Type" class="funcDec">int&amp; <strong>Type</strong>()</h4>
+<p>actor type ID</p>
+<p>this is the number after the actor's type name in defs/actors/, and enumerated in <code>turokActorTypes</code> in scripts/common.txt</p>
+
 <h4 class="funcDec">bool <strong>InstanceOf</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>className</em> )</h4>
 <p>returns whether this actor's associated <a href="scripts.html#NativeClasses">native object</a> is an instance of <code>className</code>, or a subclass thereof (this refers to kex-prefixed classes, not script classes)</p>
+
+<h4 class="funcDec">kActor@ <strong>CastToActor</strong>()</h4>
+<h4 class="funcDec"><a href="kAI.html">kAI</a>@ <strong>CastToAI</strong>()</h4>
 
 <h4 id="GameTicks" class="funcDec"><!--const -->int <strong>GameTicks</strong>()</h4>
 <p>how many <a href="scripts.html#TickRate">ticks</a> the actor has existed for</p>
@@ -127,6 +146,12 @@
 	</li>
 	<li>
 		<span>AF_ENTEREDAREAEVENT</span>
+		<span>&ndash;</span>
+		<span>
+			set on the <a href="scripts.html#TickRate">tick</a> after the <a href="kPuppet.html">player</a> enters an <a href="kWorld.html#AAF_EVENT">event area</a><br>
+			cleared when the player leaves<br>
+			untested for other actor types
+		</span>
 	</li>
 	<li>
 		<span>AF_REMOVEONCOMPLETION</span>
@@ -136,6 +161,11 @@
 	</li>
 	<li>
 		<span>AF_AVOIDWATER</span>
+		<span>&ndash;</span>
+		<span>
+			deletes the actor if it enters a water sector<br>
+			initialized by "Avoid Water" in Spawn Flags 1
+		</span>
 	</li>
 	<li>
 		<span>AF_FLOATINWATERONDEATH</span>
@@ -145,6 +175,11 @@
 	</li>
 	<li>
 		<span>AF_STATIONARY</span>
+		<span>&ndash;</span>
+		<span>
+			AI stands in place<br>
+			initialized by "Sniper" in Spawn Flags 1
+		</span>
 	</li>
 	<li>
 		<span>AF_ALIGNTOFLOOR</span>
@@ -196,13 +231,107 @@
 </ul>
 <aside>During the "native" step of <a href="ScriptObject.html#Initialization">initialization</a>, an actor's flags are bitwise or'd with its initial settings.  This means that, before they are initialized, flags can be set, but not cleared.</aside>
 
-<h4 id="SpawnFlags" class="funcDec collapse"><!--const -->uint <strong>SpawnFlags1</strong>()</h4>
-<h4 class="funcDec collapse"><!--const -->uint <strong>SpawnFlags2</strong>()</h4>
-<h4 class="funcDec collapse"><!--const -->uint <strong>SpawnFlags3</strong>()</h4>
-<h4 class="funcDec"><!--const -->int16 <strong>SpawnParams</strong>( <!--const -->int <em>param</em> )</h4>
-<p>generic space for various actor properties</p>
-<p>different classes seem to use these for different things</p>
+<span class="SpawnFlags">
+<h4 id="SpawnFlags" class="funcDec"><!--const -->uint <strong>SpawnFlags1</strong>()</h4>
+<ul class="enum noIndent">
+	<li><span>1 &lt;&lt; &nbsp;0</span><span>&ndash;</span><span>Solid</span></li>
+	<li><span>1 &lt;&lt; &nbsp;1</span><span>&ndash;</span><span>Projectile Attack 1</span></li>
+	<li><span>1 &lt;&lt; &nbsp;2</span><span>&ndash;</span><span>Leader</span></li>
+	<li><span>1 &lt;&lt; &nbsp;3</span><span>&ndash;</span><span>Snap To Floor</span></li>
+	<li><span>1 &lt;&lt; &nbsp;4</span><span>&ndash;</span><span>Explosion Death</span></li>
+	<li><span>1 &lt;&lt; &nbsp;5</span><span>&ndash;</span><span>Climb Walls</span></li>
+	<li><span>1 &lt;&lt; &nbsp;6</span><span>&ndash;</span><span>Projectile Attack 2</span></li>
+	<li><span>1 &lt;&lt; &nbsp;7</span><span>&ndash;</span><span>No Repeat Explosion</span></li>
+	<li><span>1 &lt;&lt; &nbsp;8</span><span>&ndash;</span><span>Die On Explosion</span></li>
+	<li><span>1 &lt;&lt; &nbsp;9</span><span>&ndash;</span><span>Flocker</span></li>
+	<li><span>1 &lt;&lt; 13</span><span>&ndash;</span><span>Kamikaze</span></li>
+	<li><span>1 &lt;&lt; 14</span><span>&ndash;</span><span>Avoid Players</span></li>
+	<li><span>1 &lt;&lt; 15</span><span>&ndash;</span><span>Float In Water On Death</span></li>
+	<li><span>1 &lt;&lt; 16</span><span>&ndash;</span><span>Teleport</span></li>
+	<li><span>1 &lt;&lt; 17</span><span>&ndash;</span><span>Cast Shadow</span></li>
+	<li><span>1 &lt;&lt; 18</span><span>&ndash;</span><span>Teleport Wait</span></li>
+	<li><span>1 &lt;&lt; 19</span><span>&ndash;</span><span>Use Strong Attacks</span></li>
+	<li><span>1 &lt;&lt; 20</span><span>&ndash;</span><span>Use Weak Attacks</span></li>
+	<li><span>1 &lt;&lt; 21</span><span>&ndash;</span><span>Sniper</span></li>
+	<li><span>1 &lt;&lt; 22</span><span>&ndash;</span><span>Melt On Death</span></li>
+	<li><span>1 &lt;&lt; 23</span><span>&ndash;</span><span>Avoid Water</span></li>
+	<li><span>1 &lt;&lt; 24</span><span>&ndash;</span><span>Flying</span></li>
+	<li><span>1 &lt;&lt; 25</span><span>&ndash;</span><span>Teleport Avoid Water</span></li>
+	<li><span>1 &lt;&lt; 26</span><span>&ndash;</span><span>Teleport Avoid Cliffs</span></li>
+	<li><span>1 &lt;&lt; 27</span><span>&ndash;</span><span>Trigger Stuff</span></li>
+	<li><span>1 &lt;&lt; 28</span><span>&ndash;</span><span>Cannot Cause A Fight</span></li>
+	<li><span>1 &lt;&lt; 29</span><span>&ndash;</span><span>No Wall Collision</span></li>
+	<li><span>1 &lt;&lt; 30</span><span>&ndash;</span><span>Screen Shake</span></li>
+	<li><span>1 &lt;&lt; 31</span><span>&ndash;</span><span>Respawn Animation</span></li>
+</ul>
+</span>
 
+<span class="SpawnFlags">
+<h4 class="funcDec"><!--const -->uint <strong>SpawnFlags2</strong>()</h4>
+<ul class="enum noIndent">
+	<li><span>1 &lt;&lt; &nbsp;0</span><span>&ndash;</span><span>Drop Item Mask 1</span></li>
+	<li><span>1 &lt;&lt; &nbsp;1</span><span>&ndash;</span><span>Drop Item Mask 2</span></li>
+	<li><span>1 &lt;&lt; &nbsp;2</span><span>&ndash;</span><span>Drop Item Mask 3</span></li>
+	<li><span>1 &lt;&lt; &nbsp;3</span><span>&ndash;</span><span>Drop Item Mask 4</span></li>
+	<li><span>1 &lt;&lt; &nbsp;4</span><span>&ndash;</span><span>Drop Item Mask 5</span></li>
+	<li><span>1 &lt;&lt; &nbsp;5</span><span>&ndash;</span><span>Drop Item Mask 6</span></li>
+	<li><span>1 &lt;&lt; &nbsp;6</span><span>&ndash;</span><span>Drop Item Mask 7</span></li>
+	<li><span>1 &lt;&lt; &nbsp;7</span><span>&ndash;</span><span>Drop Item Mask 8</span></li>
+	<li><span>1 &lt;&lt; &nbsp;8</span><span>&ndash;</span><span>Drop Item Mask 9</span></li>
+	<li><span>1 &lt;&lt; &nbsp;9</span><span>&ndash;</span><span>Drop Item Mask 10</span></li>
+	<li><span>1 &lt;&lt; 10</span><span>&ndash;</span><span>Drop Item Mask 11</span></li>
+	<li><span>1 &lt;&lt; 11</span><span>&ndash;</span><span>Drop Item Mask 12</span></li>
+	<li><span>1 &lt;&lt; 12</span><span>&ndash;</span><span>Drop Item Mask 13</span></li>
+	<li><span>1 &lt;&lt; 13</span><span>&ndash;</span><span>Drop Item Mask 14</span></li>
+	<li><span>1 &lt;&lt; 14</span><span>&ndash;</span><span>Remove on Completion</span></li>
+	<li><span>1 &lt;&lt; 15</span><span>&ndash;</span><span>No Blood</span></li>
+	<li><span>1 &lt;&lt; 16</span><span>&ndash;</span><span>Hold Trigger Animation</span></li>
+	<li><span>1 &lt;&lt; 17</span><span>&ndash;</span><span>Projectile Attack 3</span></li>
+	<li><span>1 &lt;&lt; 18</span><span>&ndash;</span><span>Projectile Attack 4</span></li>
+	<li><span>1 &lt;&lt; 19</span><span>&ndash;</span><span>Drop Item On Damage</span></li>
+	<li><span>1 &lt;&lt; 20</span><span>&ndash;</span><span>No Automap Draw</span></li>
+	<li><span>1 &lt;&lt; 21</span><span>&ndash;</span><span>Alternate Moves</span></li>
+	<li><span>1 &lt;&lt; 24</span><span>&ndash;</span><span>Projectile Attack 5</span></li>
+	<li><span>1 &lt;&lt; 25</span><span>&ndash;</span><span>Projectile Attack 6</span></li>
+	<li><span>1 &lt;&lt; 26</span><span>&ndash;</span><span>Mortal Wound Impact</span></li>
+	<li><span>1 &lt;&lt; 27</span><span>&ndash;</span><span>Stay In Water</span></li>
+	<li><span>1 &lt;&lt; 30</span><span>&ndash;</span><span>Projectile Attack 7</span></li>
+	<li><span>1 &lt;&lt; 31</span><span>&ndash;</span><span>Projectile Attack 8</span></li>
+</ul>
+</span>
+
+<span class="SpawnFlags">
+<h4 class="funcDec"><!--const -->uint <strong>SpawnFlags3</strong>()</h4>
+<ul class="enum noIndent">
+	<li><span>1 &lt;&lt; &nbsp;1</span><span>&ndash;</span><span>Play Trigger Anim Once</span></li>
+	<li><span>1 &lt;&lt; &nbsp;2</span><span>&ndash;</span><span>Regenerate From Start</span></li>
+	<li><span>1 &lt;&lt; &nbsp;3</span><span>&ndash;</span><span>Walk In Straight Line</span></li>
+	<li><span>1 &lt;&lt; &nbsp;5</span><span>&ndash;</span><span>No Thinker</span></li>
+	<li><span>1 &lt;&lt; &nbsp;6</span><span>&ndash;</span><span>Avoid Players 2</span></li>
+	<li><span>1 &lt;&lt; &nbsp;7</span><span>&ndash;</span><span>No Violent Death</span></li>
+	<li><span>1 &lt;&lt; &nbsp;8</span><span>&ndash;</span><span>Projectile Attack 9</span></li>
+	<li><span>1 &lt;&lt; &nbsp;9</span><span>&ndash;</span><span>Projectile Attack 10</span></li>
+	<li><span>1 &lt;&lt; 10</span><span>&ndash;</span><span>Make Spawn Anim Visible</span></li>
+	<li><span>1 &lt;&lt; 11</span><span>&ndash;</span><span>No Draw On Camera</span></li>
+</ul>
+</span>
+
+<p>static <a href="scripts.html#BitFields">bit fields</a> corresponding to the tabs of the same names in the editor</p>
+<p>some of these are used to initialize other properties when the actor is (re)spawned (e.g., the "Sniper" flag sets <a href="#Flags"><code>AF_STATIONARY</code></a>), while other are referenced directly (e.g., the item drop flags in <code>TurokEnemy::DropItem()</code>)</p>
+
+<h4 class="funcDec"><!--const -->int16 <strong>SpawnParams</strong>( <!--const -->int <em>param</em> )</h4>
+<p>static properties corresponding to the following editor fields:</p>
+<ul class="enum">
+	<li><span>0</span><span>&ndash;</span><span>Target TID</span></li>
+	<li><span>1</span><span>&ndash;</span><span>Trigger Anim (uint8)</span></li>
+	<li><span>2</span><span>&ndash;</span><span>Health (initial)</span></li>
+	<li><span>3</span><span>&ndash;</span><span>Max Regenerations</span></li>
+	<li><span>4</span><span>&ndash;</span><span>Attack Chance (uint8)</span></li>
+	<li><span>5</span><span>&ndash;</span><span>Texture (initial) (int8)</span></li>
+	<li><span>6</span><span>&ndash;</span><span>Params 2 (int8)</span></li>
+	<li><span>7</span><span>&ndash;</span><span>Params 1 (int8)</span></li>
+</ul>
+<p>some classes use these in novel ways (e.g., movers use health and attack chance to control timing)</p>
 
 
 
@@ -260,10 +389,11 @@
 <h4 id="MoveToPosition" class="funcDec"><span class="unimportant">void</span> <strong>MoveToPosition</strong>( <!--const -->float <em>newX</em>, <!--const -->float <em>newY</em> )</h4>
 <p>tries to move to the given global horizontal coordinates</p>
 <p>will move up and down slopes, but will be stopped by any obstructions along the way</p>
+<p>stores collision info in the global <code><a href="kCModel.html">CModel</a></code> if anything was hit along the way</p>
 
 <h4 id="SetPosition" class="funcDec"><span class="unimportant">void</span> <strong>SetPosition</strong>( <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>newLoc</em> )</h4>
 <p>set location to an arbitrary point</p>
-<p>if the actor gets stuck in a wall or actor, or outside the map, the game will try to find a reasonable place to move it back into bounds</p>
+<p>if the actor gets stuck in an invalid spot (based on its <a href="#ClipFlags">clip flags</a>), the game will try to find a reasonable place to move it back into bounds</p>
 <aside>
 	this seems to update the actor's <a href="kWorld.html#MapStructure">sector</a> more reliably than modifying <code><a href="#Origin">Origin()</a></code>
 </aside>
@@ -316,6 +446,7 @@
 
 <h4 id="GetSectorIndexAtLocation" class="funcDec"><!--const -->int <strong>GetSectorIndexAtLocation</strong>( <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>loc</em>, uint <em class="hasDef">[unknown]</em> = <em class="defVal">0</em> )</h4>
 <p>returns the <a href="kWorld.html#MapStructure">sector</a> that contains <code>loc</code></p>
+<aside>This function updates the global <code><a href="kCModel.html">CModel</a></code>, which suggests bounds checks are performed, in which case the uint parameter may be clip flags defining which checks to perform, like <code><a href="#CanSee">CanSee()</a></code>.  Needs testing.</aside>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>SetSector</strong>( <!--const -->uint <em>i</em> )</h4>
 
@@ -344,7 +475,7 @@
 	areas without a <a href="kWorld.html#AAF_CEILING">ceiling</a> have a junk ceiling height value
 </aside>
 
-<h4 class="funcDec">bool <strong>CheckPosition</strong>( <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v</em> )</h4>
+<h4 id="CheckPosition" class="funcDec collapse">bool <strong>CheckPosition</strong>( <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v</em> )</h4>
 <h4 class="funcDec">bool <strong>CheckPosition</strong>( <!--const -->float <em>f</em>, <!--const -->float <em>f</em> )</h4>
 
 <h4 class="funcDec"><!--const -->float <strong>GetWaterHeight</strong>()</h4>
@@ -369,7 +500,7 @@
 	<li><span>IT_FORCEFIELD</span></li>
 </ul>
 
-<h4 class="funcDec">uint&amp; <strong>ClipFlags</strong>()</h4>
+<h4 id="ClipFlags" class="funcDec">uint&amp; <strong>ClipFlags</strong>()</h4>
 <p><a href="scripts.html#BitFields">bit field</a> of clipping flags:</p>
 <ul class="enum">
 	<li>
@@ -383,6 +514,8 @@
 	</li>
 	<li>
 		<span>CF_NOENTERWATER</span>
+		<span>&ndash;</span>
+		<span>actor cannot enter <code><a href="kWorld.html#AAF_WATER">AAF_WATER</a></code> sectors, unless they also have <code><a href="kWorld.html#AAF_SHALLOWWATER">AAF_SHALLOWWATER</a></code></span>
 	</li>
 	<li>
 		<span>CF_NOEXITWATER</span>
@@ -475,8 +608,76 @@
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>SetTarget</strong>( kActor@ <em>a</em> )</h4>
 <h4 class="funcDec">kActor@ <strong>GetTarget</strong>()</h4>
 
-<h4 class="funcDec collapse"><!--const -->bool <strong>CanSee</strong>( kActor@ <em>a</em>, <!--const -->uint <em class="hasDef">i</em> = <em class="defVal">0</em> )</h4>
-<h4 class="funcDec"><!--const -->bool <strong>CanSee</strong>( <a href="kPuppet.html">kPuppet</a>@ <em>p</em>, <!--const -->uint <em class="hasDef">i</em> = <em class="defVal">0</em> )</h4>
+<h4 id="CanSee" class="funcDec collapse"><!--const -->bool <strong>CanSee</strong>( kActor@ <em>a</em>, <!--const -->uint <em class="hasDef">clipFlags</em> = <em class="defVal">0</em> )</h4>
+<h4 class="funcDec"><!--const -->bool <strong>CanSee</strong>( <a href="kPuppet.html">kPuppet</a>@ <em>a</em>, <!--const -->uint <em class="hasDef">clipFlags</em> = <em class="defVal">0</em> )</h4>
+<p>performs a raycast to <code>a</code>, and stores the result in the global <code><a href="kCModel.html">CModel</a></code></p>
+<p>returns true if anything was hit between the two actors</p>
+<p><code>clipFlags</code> is a <a href="scripts.html#BitFields">bit field</a> of <a href="#ClipFlags">clip flags</a> to <strong>disable</strong> (e.g., "collide floors" means the ray should <em>not</em> collide with floors; i.e., the actor should see through floors):</p>
+<ul class="enum">
+	<li>
+		<span>CF_CLIPEDGES</span><span>&ndash;</span><span>see through most level geometry?</span>
+	</li>
+	<li>
+		<span>CF_IGNOREBLOCKERS</span><span>&ndash;</span><span>do not see through blocking sectors (closed doors)</span>
+	</li>
+	<li>
+		<span>CF_DROPOFF</span><span>&ndash;</span><span>do not see across cliff sectors</span>
+	</li>
+	<li class="void">
+		<span>CF_NOENTERWATER</span><span>&ndash;</span><span>no effect?</span>
+	</li>
+	<li>
+		<span>CF_NOEXITWATER</span>
+	</li>
+	<li>
+		<span>CF_NOCLIPSTATICS</span><span>&ndash;</span><span>do not see through static meshes (trees, etc.)</span>
+	</li>
+	<li>
+		<span>CF_NOCLIPACTORS</span><span>&ndash;</span><span>do not see through actors</span>
+	</li>
+	<li>
+		<span>CF_WALKWALLS</span>
+	</li>
+	<li>
+		<span>CF_COLLIDEFLOORS</span><span>&ndash;</span><span>see through floors</span>
+	</li>
+	<li>
+		<span>CF_HITSCAN</span><span>&ndash;</span><span>causes <code><a href="kCModel.html#InterceptVector">kCModel::InterceptVector()</a></code> to be all over the place?</span>
+	</li>
+	<li>
+		<span>CF_ALLOWCLIMB</span>
+	</li>
+	<li class="void">
+		<span>CF_ALLOWCRAWL</span><span>&ndash;</span><span>no effect?</span>
+	</li>
+	<li>
+		<span>CF_NOSTEPDOWN</span>
+	</li>
+	<li>
+		<span>CF_NOSLOPESTEP</span>
+	</li>
+	<li>
+		<span>CF_COLLIDEHEIGHT</span>
+	</li>
+	<li class="void">
+		<span>CF_COLLIDECORPSES</span><span>&ndash;</span><span>no effect?</span>
+	</li>
+	<li>
+		<span>CF_NOEXITWALLS</span>
+	</li>
+	<li>
+		<span>CF_NOCOLLIDEFUNC</span>
+	</li>
+	<li>
+		<span>CF_NOFLOORADJUST</span>
+	</li>
+	<li>
+		<span>CF_NOCEILINGADJUST</span>
+	</li>
+	<li class="void">
+		<span>CF_COLLIDEWATER</span><span>&ndash;</span><span>no effect?</span>
+	</li>
+</ul>
 <aside>
 	the <code>kPuppet</code> version is only available in kActor, not subclasses
 </aside>
@@ -487,13 +688,32 @@
 
 <h3 id="Other">Other Methods</h3>
 
-<h4 class="funcDec"><span class="unimportant">void</span> <strong>SpawnProjectile</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>s</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v1</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v2</em>, <!--const -->float <em>f</em> )</h4>
-<h4 class="funcDec"><span class="unimportant">void</span> <strong>MeleeObject</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>s</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v</em>, <!--const -->float <em>f</em> )</h4>
+<h4 id="SpawnProjectile" class="funcDec"><span class="unimportant">void</span> <strong>SpawnProjectile</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>s</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v1</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v2</em>, <!--const -->float <em>f</em> )</h4>
+
+<h4 id="MeleeObject" class="funcDec"><span class="unimportant">void</span> <strong>MeleeObject</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>damageType</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>offset</em>, <!--const -->float <em>radius</em> )</h4>
+<p>inflict <code>damageType</code> on all actors within range of the given offset, according to the following math:
+<pre><code>float range = (radius + 1) * 2 * GAME_SCALE;
+kVec3 origin = self.GetTransformedVector( offset );
+for every actor A in the general vicinity of origin
+{
+	kVec3 v = A.Origin();     // actor's base
+	v.z += A.Height() * 0.5f; // center of mass
+	float dist = (v - origin).Unit() - A.Radius();
+	if ( dist &lt;= range )
+		inflict damageType on A
+}</code></pre></p>
+<p>damage types are defined in <a href="defs.html#damageInfo">defs/damageInfo.txt</a></p>
+
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>SpawnFx</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>s</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v</em> )</h4>
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>SpawnFx</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>s</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v</em>, <!--const --><a href="kQuat.html">kQuat</a>&amp;<!--in--> <em>q</em> )</h4>
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>InflictGenericDamage</strong>( kActor@ <em>a</em>, <!--const -->int <em>i</em> )</h4>
 
-<h4 class="funcDec"><span class="unimportant">void</span> <strong>InteractActorsAtPosition</strong>( <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>v</em>, <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>s</em>, <!--const -->float <em class="hasDef">f1</em> = <em class="defVal">0</em>, <!--const -->float <em class="hasDef">f2</em> = <em class="defVal">0</em>, <!--const -->float <em class="hasDef">f3</em> = <em class="defVal">0</em>, <!--const -->float <em class="hasDef">f4</em> = <em class="defVal">0</em> )</h4>
+<h4 class="funcDec"><span class="unimportant">void</span> <strong>InteractActorsAtPosition</strong>( <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>position</em>, <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>callbackFunc</em>,<br>
+<!--const -->float <em class="hasDef">arg1</em> = <em class="defVal">0</em>, <!--const -->float <em class="hasDef">arg2</em> = <em class="defVal">0</em>, <!--const -->float <em class="hasDef">arg3</em> = <em class="defVal">0</em>, <!--const -->float <em class="hasDef">arg4</em> = <em class="defVal">0</em> )</h4>
+<p>for every actor <code>A</code> in the general vicinity of <code>position</code>, call:
+<pre><code>this.callbackFunc( A, arg1, arg2, arg3, arg4 );</code></pre></p>
+the callback function should be defined in the <a href="scripts.html#UserScripts">user script</a> (or a parent class) for the actor that called <code>InteractActorsAtPosition()</code>, with the following type signature:
+<pre><code>void( kActor@, const float, const float, const float, const float )</code></pre></p>
 
 <h4 class="funcDec">bool <strong>RandomDecision</strong>( <!--const -->int <em>i</em> )</h4>
 <p>probability of returning true is 1 / 2<sup><code>i</code>-1</sup>, except when <code>i</code> is <code>0</code>, in which case the probability is nearly 0</p>

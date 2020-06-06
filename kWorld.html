@@ -37,8 +37,8 @@
 
 <h3 id="Methods">Methods</h3>
 
-<h4 class="funcDec"><a href="kActor.html">kActor</a>@ <strong>GetActorByTID</strong>( <!--const -->int <em>tagID</em>, <!--const -->int <em class="hasDef">[unknown]</em> = <em class="defVal">-1</em> )</h4>
-<p>get the first actor with a given <a href="kActor.html#TID">tag ID</a></p>
+<h4 class="funcDec"><a href="kActor.html">kActor</a>@ <strong>GetActorByTID</strong>( <!--const -->int <em>tagID</em>, <!--const -->int <em class="hasDef">type</em> = <em class="defVal">-1</em> )</h4>
+<p>get the first actor with a given <a href="kActor.html#TID">tag ID</a> and <a href="kActor.html#Type">type</a> (if specified)</p>
 
 <h4 class="funcDec"><!--const -->bool <strong>TriggerActorsByTID</strong>( <a href="kActor.html">kActor</a>@ <em>a</em>, <!--const -->int <em>tagID</em> )</h4>
 
@@ -115,7 +115,7 @@
 		<span></span>
 		<span></span>
 	</li>
-	<li>
+	<li id="AAF_DEATHPIT">
 		<span>AAF_DEATHPIT</span>
 		<span>&ndash;</span>
 		<span>fallling death</span>
@@ -125,7 +125,7 @@
 		<span></span>
 		<span></span>
 	</li>
-	<li>
+	<li id="AAF_EVENT">
 		<span>AAF_EVENT</span>
 		<span>&ndash;</span>
 		<span>trigger some kind of event when entered, like enemies appearing, or a door opening</span>
@@ -134,7 +134,7 @@
 		<span>AAF_REPEATABLE</span><!-- hub key panels, button on level 2 also plays sound every time you step on it, even though it doesn't have this, buttons at beginning of catacombs can be pressed again after resetting without this -->
 		<span></span>
 		<span></span>
-	<li>
+	<li id="AAF_TELEPORT">
 		<span>AAF_TELEPORT</span>
 		<span>&ndash;</span>
 		<span>teleport when stepped on</span>
@@ -142,7 +142,7 @@
 	<li>
 		<span>AAF_DAMAGE</span>
 		<span>&ndash;</span>
-		<span>floor deals damage (lava, tar; not the lasers on level 8)</span>
+		<span>floor deals damag</span>
 	</li>
 	<li>
 		<span>AAF_DRAWSKY</span>
@@ -157,10 +157,7 @@
 	<li>
 		<span>AAF_LAVA</span>
 		<span>&ndash;</span>
-		<span>
-			generally a floor that slows the player down (lava, tar)<br>
-			the sludge on level 8 has this, but doesn't slow the player
-		</span>
+		<span>floor slows player down when combined with <code>AAF_DAMAGE</code></span>
 	</li>
 	<li>
 		<span>AAF_EVENTSOUND</span><!-- buttons on level 2, but not level 1 -->
@@ -175,7 +172,7 @@
 	<li>
 		<span>AAF_LADDER</span>
 		<span>&ndash;</span>
-		<span>ladders, climbable trees (paired with <code>AAF_CLIMB</code>)</span>
+		<span>allows player to climb <code>AAF_CLIMB</code> sectors a bit faster</span>
 	</li>
 	<li>
 		<span>AAF_CHECKPOINT</span>
@@ -195,10 +192,7 @@
 	<li id="AAF_SHALLOWWATER">
 		<span>AAF_SHALLOWWATER</span>
 		<span>&ndash;</span>
-		<span>
-			water too shallow to swim in (paired with <code>AAF_WATER</code>)<br>
-			not all shallow water uses this
-		</span>
+		<span>prevent player from entering swimming state in <code>AAF_WATER</code> sectors</span>
 	</li>
 	<li>
 		<span>AAF_DRAWSUN</span>
@@ -207,13 +201,13 @@
 	</li>
 </ul>
 
-<h4 class="funcDec collapse"><span class="unimportant">void</span> <strong>ChangeAreaFlag</strong>( <!--const -->int <em>areaID</em>, <!--const -->uint <em>flags</em>, <!--const -->bool <em>bSet</em> )</h4>
 <h4 class="funcDec collapse"><span class="unimportant">void</span> <strong>FloodMatchingAreaFlags</strong>( <!--const -->int <em>sector</em>, <!--const -->uint <em>flags</em>, <!--const -->bool <em>bSet</em> )</h4>
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>FloodFillAreaFlags</strong>( <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>loc</em>, <!--const -->uint <em>flags</em>, <!--const -->bool <em>bSet</em> )</h4>
-<p>set or clear the given flags in an area based on its ID, a sector within it, or a point inside it</p>
+<p>set or clear the given flags in an area based on a sector or point inside it</p>
 
 <aside class="unimportant">
-	<code>void FloodFillAreaFlags( <!--const -->int i, <!--const -->uint flags, <!--const--> bool bSet )</code> doesn't seem to do anything
+	<p class="collapse"><code>void FloodFillAreaFlags( <!--const -->int sector, <!--const -->uint flags, <!--const--> bool bSet )</code> can only clear flags; crashes game when setting flags that are already set</p>
+	<p><code>void ChangeAreaFlag( <!--const -->int areaID, <!--const -->uint flags, <!--const -->bool bSet )</code> toggles bits, but some flags don't actually take effect</p>
 </aside>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>ChangeSectorHeight</strong>( <!--const -->int <em>sector</em>, <!--const -->float <em>height</em> )</h4>

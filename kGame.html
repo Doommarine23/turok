@@ -15,7 +15,13 @@
 <nav>
 	<h3>Contents</h3>
 	<ul>
-		<li><a href="#Methods">Methods</a></li>
+		<li><a href="#LevelScripts">Level Scripts</a></li>
+		<li><a href="#LevelMethods">Other Level Methods</a></li>
+		<li><a href="#Music">Music</a></li>
+		<li><a href="#Title">Title</a></li>
+		<li><a href="#Text">Text</a></li>
+		<li><a href="#Other">Other</a></li>
+		<li><a href="#Particles">Particles</a></li>
 	</ul>
 </nav>
 
@@ -25,31 +31,68 @@
 <p>stored in global var <code>Game</code></p>
 
 
-<h3 id="Methods">Methods</h3>
+<h3 id="LevelScripts">Level Sripts</h3>
 
+<h4 id="CallDelayedMapScript" class="funcDec collapse"><span class="unimportant">void</span> <strong>CallDelayedMapScript</strong>( <!--const -->int <em>scriptID</em>, <a href="kActor.html">kActor</a>@ <em>instigator</em>, <!--const -->float <em>delay</em> )</h4>
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>CallDelayedMapScript</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>s</em>, <a href="kActor.html">kActor</a>@ <em>instigator</em>, <!--const -->float <em>delay</em> )</h4>
-
-<h4 class="funcDec"><span class="unimportant">void</span> <strong>CallDelayedMapScript</strong>( <!--const -->int <em>scriptID</em>, <a href="kActor.html">kActor</a>@ <em>instigator</em>, <!--const -->float <em>delay</em> )</h4>
+<p>invoke a <a href="level_scripts.html">level script</a> after <code>delay</code> seconds, or 1 <a href="scripts.html#TickRate">tick</a>, whichever is longer</p>
+<p>the int version can invoke <code><a href="level_scripts.html#$script">$script</a></code>s by their ID</p>
+<p>the string version can invoke by name any level script function with the following type signature:</p>
+<pre><code>void( kActor@ )</code></pre>
+<p>both versions will simply do nothing if the specified script does not exist</p>
+<aside>when called from <code>$script 0</code> during level startup, <code>delay</code> will be increased by 5 <a href="scripts.html#TickRate">ticks</a></aside>
+<p></p><!-- spacer -->
+<aside><code>$script 0</code> will always be invoked immediately, on the current tick, irrespective of <code>delay</code>, even during level startup, unless invoked with the string version</aside>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>HaltMapScript</strong>( <!--const -->int <em>scriptID</em> )</h4>
 <p>terminates a map script in a <code>$restart</code> loop or waiting to begin/continue</p>
 
-<h4 class="funcDec"><span class="unimportant">void</span> <strong>ChangeMap</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>path</em> )</h4>
 
-<h4 class="funcDec"><!--const -->int <strong>GetMapNumberFromName</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>path</em> )</h4>
+<h3 id="LevelMethods">Other Level Methods</h3>
+
+<h4 id="ChangeMap" class="funcDec"><span class="unimportant">void</span> <strong>ChangeMap</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>path</em> )</h4>
+<p>change to an arbitrary map by file path (does not need to be defined in defs/mapInfo.txt)</p>
+<p>screen cuts to black (sets <a href="kCamera.html#CinematicState">cinematic state</a> to <code>5</code>), as opposed to teleportation screen effects</p>
+<aside class="seeAlso">see also <code><a href="kPlayLoop.html#StartWarp">kPlayLoop::StartWarp()/StartFreeWarp()</a></code></aside>
+
+<h4 id="GetHubKeyInfo" class="funcDec">bool <strong>GetHubKeyInfo</strong>( <!--const -->uint <em>levelNum</em>, int&amp;<!--out--> <em>keys</em>, int&amp;<!--out--> <em>remaining</em>, int&amp;<!--out--> <em>lockBits</em> )</h4>
+<p>gets info on level keys:</p>
+<ul>
+	<li><code>levelNum</code> is the number of the level to check, as defined in <a href="defs.html#mapInfo">defs/mapInfo.txt</a></li>
+	<li><code>keys</code> will be set to the total number of keys on the level, as defined in <a href="defs.html#mapInfo">defs/mapInfo.txt</a></li>
+	<li><code>remaining</code> will be set to how many keys are left to find on the level</li>
+	<li><code>lockBits</code> will be a <a href="scripts.html#BitFields">bit field</a> of which keys required to enter the level have been found</li>
+</ul>
+<p>returns whether <code>levelNum</code> is defined</p>
+<aside class="seeAlso">see also <code><a href="kPlayLoop.html#CheckKeys">kPlayLoop::CheckKeys()</a></code></aside>
+
+<h4 class="funcDec"><!--const -->int <strong>GetMapNumberFromName</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>levelName</em> )</h4>
+<p>number of a level block in <a href="defs.html#mapInfo">defs/mapInfo.txt</a></p>
+<p>e.g., <code>GetMapNumberFromName("Map_SpiritWorld")</code> returns <code>11</code></p>
+<p>returns <code>-1</code> if not found</p>
 
 <h4 class="funcDec"><!--const -->int <strong>GetCurrentMapID</strong>()</h4>
+<p><code><a href="defs.html#mapid">mapid</a></code> of the current map</p>
+<p>returns <code>-1</code> if the current map isn't in <a href="defs.html#mapInfo">defs/mapInfo.txt</a></p>
 
+
+<h3 id="Music">Music</h3>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>PlayMusic</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>path</em>, <!--const -->bool <em>bLoop</em> )</h4>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>StopMusic</strong>()</h4>
 
 
+<h3 id="Title">Title</h3>
+
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>Restart</strong>()</h4>
+<p>return to title screen</p>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>ShowMainMenu</strong>()</h4>
+<p>display title screen menu</p>
 
+
+<h3 id="Text">Text</h3>
 
 <h4 class="funcDec"><span class="unimportant">void</span> <strong>PrintLine</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>msg</em>, <!--const -->int <em>lineNum</em>, <!--const -->int <em class="hasDef">ticks</em> = <em class="defVal">120</em> )</h4>
 
@@ -57,6 +100,8 @@
 
 <h4 class="funcDec"><a href="kStr.html">kStr</a> <strong>GetLocalizedText</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>key</em> )</h4>
 
+
+<h3 id="Other">Other</h3>
 
 <h4 class="funcDec"><!--const -->int <strong>GetDifficulty</strong>()</h4>
 <p>current difficulty setting</p>
@@ -68,16 +113,8 @@
 	<li>DIFFICULTY_HARDCORE</li>
 </ul>
 
-<h4 class="funcDec">bool <strong>GetHubKeyInfo</strong>( <!--const -->uint <em>levelNum</em>, int&amp;<!--out--> <em>keys</em>, int&amp;<!--out--> <em>remaining</em>, int&amp;<!--out--> <em>lockBits</em> )</h4>
-<p>gets info on level keys:</p>
-<ul>
-	<li><code>levelNum</code> is the number of the level to check, as defined in <a href="defs.html#mapInfo">defs/mapInfo.txt</a></li>
-	<li><code>keys</code> will be set to the total number of keys on the level, as defined in <a href="defs.html#mapInfo">defs/mapInfo.txt</a></li>
-	<li><code>remaining</code> will be set to how many keys are left to find on the level</li>
-	<li><code>lockBits</code> will be a <a href="scripts.html#BitFields">bit field</a> of which keys required to enter the level have been found</li>
-</ul>
-<p>returns whether <code>levelNum</code> is defined</p>
 
+<h3 id="Particles">Particles</h3>
 
 <h4 class="funcDec">
 	<span class="unimportant">void</span> <strong>SpawnFx</strong>( <!--const --><a href="kStr.html">kStr</a>&amp;<!--in--> <em>path</em>, <a href="kActor.html">kActor</a>@ <em>instigator</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>vel</em>, <!--const --><a href="kVec3.html">kVec3</a>&amp;<!--in--> <em>loc</em>, <!--const --><a href="kQuat.html">kQuat</a>&amp;<!--in--> <em>rot</em> )

@@ -48,9 +48,9 @@
 
 <h2>FX</h2>
 
-<p>Each kfx file can define multiple effects to spawn when the kfx is invoked.</p>
-<p>The number of effects is specified at the beginning of the file with <code>fx[N] =</code>, followed by a block containing <code>N</code> sub blocks, each defining an effect to spawn when the kfx is invoked.</p>
-<p>The number of effect definitions <strong>must</strong> match the value of <code>N</code>, or the game will crash when the kfx is invoked.</p>
+<p>Each kfx file can define multiple particles to spawn when the kfx is spawned.</p>
+<p>The number of particle types is specified at the beginning of the file with <code>fx[N] =</code>, followed by a block containing <code>N</code> sub blocks, each defining a particle type to spawn when the kfx is spawned.</p>
+<p>The number of particle type definitions <strong>must</strong> match the value of <code>N</code>, or the game will crash when the kfx is spawned.</p>
 
 
 <h3 id="Key">Key</h3>
@@ -58,7 +58,7 @@
 <aside id="vector">
 	<h4 class="collapse">(v)</h4>
 	vector &ndash; defined as a block of 3 floating points: <code>{ x y z }</code><br>
-	+x is right, +y is forward, +z is up (relative to effect orientation)
+	+x is right, +y is forward, +z is up (relative to particle orientation)
 </aside>
 
 <p></p>
@@ -97,7 +97,7 @@ forwardSpeedRandom = 500</code></pre>
 	</tr>
 	<tr>
 		<td>bDrawOnBottom</td>
-		<td>render in front of other effects</td>
+		<td>render in front of other particles</td>
 	</tr>
 	<tr id="bLensFlares">
 		<td>bLensFlares</td>
@@ -180,10 +180,10 @@ forwardSpeedRandom = 500</code></pre>
 	<tr id="bBullet">
 		<td>bBullet</td>
 		<td>
-			<p class="collapse">affects various behavior properties, including:</p>
+			<p class="collapse">affects various behavioral properties:</p>
 			<ul>
-				<li><a href="#airFriction"><code>airFriction</code></a> cuts <a href="#lifeTime"><code>lifeTime</code></a> short instead of affecting velocity</li>
-				<li>see notes in <a href="#Collision">Collision</a></li>
+				<li>Particle is destroyed when speed drops below a certain threshold.  Does not call <a href="#onExpire"><code>onExpire</code></a> or <a href="#onWaterExpire"><code>onWaterExpire</code></a> in this case (they will still happen when <code>lifeTime</code> runs out).</li>
+				<li>See notes in <a href="#Collision">Collision</a>.</li>
 			</ul>
 		</td>
 	</tr>
@@ -192,12 +192,19 @@ forwardSpeedRandom = 500</code></pre>
 		<td>destroy when entering/exiting water</td>
 	</tr>
 	<tr>
-		<td>bNoHitSource</td>
-		<td>don't register collision with whatever spawned the effect</td>
+		<td>bNoDirection</td>
+		<td>use global rather than local coordinates for things like <a href="#translation"><code>translation</code></a> and <a href="#offset"><code>offset</code></a></td>
 	</tr>
 	<tr>
+		<td>bNoHitSource</td>
+		<td>don't register collision with whatever spawned the particle</td>
+	</tr>
+	<tr id="bPerPolyCollision">
 		<td>bPerPolyCollision</td>
-		<td></td>
+		<td>
+			<p>makes the particle qualify for <a href="console.html#g_perpolyparticlecollision">precise projectile collision</a></p>
+			<p>may not always be desirable, as it can cause the particle to collide with small details like vines</p>
+		</td>
 	</tr>
 	<tr>
 		<td>bProjectile</td>
@@ -214,7 +221,12 @@ forwardSpeedRandom = 500</code></pre>
 <table>
 	<tr>
 		<td>bBlood</td>
-		<td>not sure yet, but some green blood effects lack this</td>
+<!--		<td>not sure yet, but some green blood effects lack this</td>-->
+		<td>
+			<p>do not spawn when blood is disabled, or against actors with "no blood" flag (namely animals)</p>
+			<p>a <code>bBlood</code> particle also indicates that all particles that come after it in the file should only be spawned when blood is disabled (or against "no blood" actors), unless they also have <code>bBlood</code> set</p>
+			<p>details of the green blood violence setting are untested</p>
+		</td>
 	</tr>
 	<tr>
 		<td>bNoSpawnNear</td>
@@ -230,10 +242,6 @@ forwardSpeedRandom = 500</code></pre>
 	</tr>
 	<tr>
 		<td>bNoGroundSpawn</td>
-		<td></td>
-	</tr>
-	<tr>
-		<td>bNoDirection</td>
 		<td></td>
 	</tr>
 	<tr>
@@ -273,7 +281,7 @@ forwardSpeedRandom = 500</code></pre>
 <table>
 	<tr id="offset">
 		<td>offset&nbsp;<a href="#vector">(v)</a>&nbsp;<a href="#random">*</a></td>
-		<td>where to spawn this effect, relative to where the kfx itself was spawned</td>
+		<td>where to spawn this particle, relative to where the kfx itself was spawned</td>
 	</tr>
 	<tr id="muzzleOffset">
 		<td>muzzleOffset&nbsp;<a href="#vector">(v)</a></td>
@@ -286,7 +294,7 @@ forwardSpeedRandom = 500</code></pre>
 		<td>translationRandomGlobal</td>
 		<td>increment <code>translation</code> by a vector with a random direction and random extent up to this amount?</td>
 	</tr>
-	<tr>
+	<tr id="translation">
 		<td>translation&nbsp;<a href="#vector">(v)</a>&nbsp;<a href="#random">*</a></td>
 		<td rowSpan="2">
 			<p>initial velocity = <code>forwardSpeed</code> * normal(<code>translation</code>)</p>
@@ -299,7 +307,7 @@ forwardSpeedRandom = 500</code></pre>
 	<tr>
 		<td>gravity</td>
 		<td>
-			<p>acceleration along global vertical axis</p>
+			<p>acceleration along global vertical axis, in terms of speed per second</p>
 			<p>negative values are down</p>
 		</td>
 	</tr>
@@ -307,12 +315,18 @@ forwardSpeedRandom = 500</code></pre>
 		<td>gravityRandomScale</td>
 		<td>works like other <a href="#random">randomization properties</a>, just with a different naming convention</td>
 	</tr>
-	<tr>
+	<tr id="mass">
 		<td>mass</td>
 		<td>
 			<p>fraction of velocity along hit surface normal to retain when bouncing (after velocity is mirrored):</p>
 			<blockquote>velocity += (1 + <code>mass</code>) * (velocity &bull; normal) * normal</blockquote>
-			<aside>testing seems to indicate this gets <code>0.05</code> added to it, perhaps to prevent rounding errors from causing the effect to stick to surfaces when <code>mass</code> is <code>0</code></aside>
+			<p>If <a href="#bBullet"><code>bBullet</code></a> is set, this instead controls max deflection angle.  The two extremes are:
+			</p>
+			<ul>
+				<li><code>0.0</code> - bounce only when hitting completely parallel to surface</li>
+				<li><code>1.0</code> - always bounce, even if hitting head-on</li>
+			</ul>
+			<aside>testing seems to indicate this gets <code>0.05</code> added to it, perhaps to prevent rounding errors from causing the particle to stick to surfaces when <code>mass</code> is <code>0</code></aside>
 		</td>
 	</tr>
 	<tr>
@@ -325,14 +339,17 @@ forwardSpeedRandom = 500</code></pre>
 			<p>acceleration opposing velocity</p>
 			<p class="collapse">seems to be constant based on <em>initial</em> velocity:</p>
 			<ul>
-				<li>will cause the effect to move backward if set too high</li>
+				<li>will cause the particle to move backward if set too high</li>
 				<li>causes path to curve after bouncing (instead of opposing new velocity)</li>
 			</ul>
 		</td>
 	</tr>
 	<tr>
 		<td>waterFriction</td>
-		<td>unlike <code>airFriction</code>, this isn't a constant force &ndash; the effect will actually come to a stop if <code>waterFriction</code> is high enough, and bouncing won't mess things up</td>
+		<td>
+			<p>Only affects horizontal velocity.  Vertical velocity always seems to be affected by <code>~0.1</code> friction.</p>
+			<p>Unlike <code>airFriction</code>, this isn't a constant force &ndash; the particle will actually come to a stop if <code>waterFriction</code> is high enough, and bouncing won't mess things up.</p>
+		</td>
 	</tr>
 </table>
 
@@ -344,9 +361,9 @@ forwardSpeedRandom = 500</code></pre>
 	<tr>
 		<td>instances&nbsp;<a href="#random">*</a></td>
 		<td>
-			<p>how many copies of this effect to spawn</p>
+			<p>how many copies of this particle to spawn</p>
 			<p>any randomized properties get randomized independently for each instance (e.g., shotgun pellets don't all get the same randomized trajectory)</p>
-			<p>a negative <code>instancesRandom</code> can be used to make the effect spawn &lt; 100% of the time</p>
+			<p>a negative <code>instancesRandom</code> can be used to make the particle spawn &lt; 100% of the time</p>
 		</td>
 	</tr>
 	<tr>
@@ -356,14 +373,14 @@ forwardSpeedRandom = 500</code></pre>
 	<tr id="lifeTime">
 		<td>lifeTime&nbsp;<a href="#random">*</a></td>
 		<td>
-			<p>particle will exist for (1 + 4*<code>lifeTime</code>) / 60 seconds</p>
-			<p>negative values are simply treated as <code>0</code> (i.e., <code>lifeTime = -1</code> will not cause a particle to expire instantaneously)</p>
+			<p>how long the particle will exist, in <span class="numerator">1</span>&frasl;<span class="denominator">15</span> seconds</p>
+			<aside>values &leq; <code>0</code> will cause the particle to exist for <span class="numerator">1</span>&frasl;<span class="denominator">60</span> second, even in spirit mode</aside>
 		</td>
 	</tr>
 	<tr>
 		<td>priority</td>
 		<td>
-			<p>There's a limit to how many effects can exist at once.  Effects with a higher <code>priority</code> are given precedence when that limit is reached.</p>
+			<p>There's a limit to how many particles can exist at once.  Particles with a higher <code>priority</code> are given precedence when that limit is reached.</p>
 			<p>Things that affect gameplay (like projectiles) should be set to <code>100</code>.</p>
 		</td>
 	</tr>
@@ -387,14 +404,14 @@ forwardSpeedRandom = 500</code></pre>
 		<td>shader</td>
 		<td>
 			<p>shader to render the sprite with</p>
-			<p>typically <code>worldfx</code> or <code>worldcolorfx</code> (the latter tends to be more colorful for translucent effects)</p>
+			<p>typically <code>worldfx</code> or <code>worldcolorfx</code> (the latter tends to be more colorful for translucent particless)</p>
 			<p>e.g., <code>shader = "progs/worldcolorfx"</code></p>
 		</td>
 	</tr>
-	<tr>
+	<tr id="sprite">
 		<td>sprite</td>
 		<td>
-			<p>sprite to represent the effect with</p>
+			<p><a href="sprites.html">sprite</a> to represent the particle with</p>
 			<p>e.g., <code>sprite = "sprites/fx064"</code></p>
 		</td>
 	</tr>
@@ -460,7 +477,7 @@ trailDefinition_2 = "Trail_TekBow_Crossline_2"</code></pre>
 	</tr>
 	<tr>
 		<td>animSpeed</td>
-		<td>higher = slower sprite animation</td>
+		<td>how long to display each frame of sprite animation, in <span class="numerator">1</span>&frasl;<span class="denominator">900</span> seconds (a value of <code>60</code> will display each frame for 1 <code>lifeTime</code> unit)</td>
 	</tr>
 	<tr>
 		<td>animFriction</td>
@@ -485,10 +502,10 @@ trailDefinition_2 = "Trail_TekBow_Crossline_2"</code></pre>
 	<tr>
 		<td>rotationPivotX</td>
 		<td rowSpan="2">
-			<p>offset from the effect's physical location to render the sprite</p>
-			<p>uses the same coordinate system as other <a href="#vector">vectors</a>, except relative to the camera's orientation, rather than the effect's orientation</p>
-			<p>sprite rotation orbits the effect's physical location (this is how rockets and shockwave weapon projectiles spiral)</p>
-			<p>spawned effects will center on the sprite, but hit detection, splash damage, and sounds will still be based on the effect's physical location</p>
+			<p>offset from the particles's physical location to render the sprite</p>
+			<p>uses the same coordinate system as other <a href="#vector">vectors</a>, except relative to the camera's orientation, rather than the particles's orientation</p>
+			<p>sprite rotation orbits the particles's physical location (this is how rockets and shockwave weapon projectiles spiral)</p>
+			<p>spawned particless will center on the sprite, but hit detection, splash damage, and sounds will still be based on the particles's physical location</p>
 		</td>
 	</tr>
 	<tr>
@@ -539,16 +556,18 @@ trailDefinition_2 = "Trail_TekBow_Crossline_2"</code></pre>
 			<ol class="noIndent bold">
 				<li value="0">ignore; pass right through</li>
 				<li>hit and disappear</li>
-				<li>same as 3?</li>
+				<li>hit and reflect
+					<ul>
+						<li><code>onImpact</code> event is ignored (unless <a href="#bBullet"><code>bBullet</code></a> is set)</li>
+						<li>if <a href="#bBullet"><code>bBullet</code></a> is set, bounce only up to twice, and only if angle is wide, based on <a href="#mass"><code>mass</code></a></li>
+					</ul>
+				</li>
 				<li>hit and bounce
 					<ul>
-						<li><code>onImpact</code> event is ignored (unless <a href="#bBullet"><code>bBullet</code></a>, presumably)</li>
-						<li>if <a href="#bBullet"><code>bBullet</code></a>, only bounce if angle is wide</li>
+						<li>this is supposed to be reflection with speed reduction, but seems identical to reflect?</li>
 					</ul>
 				</li>
 				<li>hit and push against, dealing continuous damage</li>
-				<li>same as 4</li>
-				<li>same as 4</li>
 			</ol>
 		</td>
 	</tr>
@@ -569,10 +588,12 @@ trailDefinition_2 = "Trail_TekBow_Crossline_2"</code></pre>
 		<td id="onImpact">onImpact</td>
 		<td>
 			<p>happens when hitting an <a href="kActor.html#ImpactType">actor</a>, wall, or floor (based on the <code>onCollide</code> properties above)</p>
+			<aside class="unimportant" style="float:right; max-width:35%;"><p>* The water impact type is typically used as a floor impact type instead of the water sector flag, in very shallow water where the engine would tend to register an impact with the floor before the actual water surface (e.g., level38.map).</p>
+			<p>However, it's also occasionally used <em>in addition</em> to the water sector flag, which can result in two redundant "water" impacts (<code>onWaterImpact</code> + <code>onImpact[1]</code>; e.g., the end of level07.map).</p></aside>
 			<p>contains a sub-block for each surface type it can hit:</p>
 			<ol class="bold">
 				<li value="0">grass/wood surfaces</li>
-				<li class="void" style="display:inline;">water (unused?)</li>
+				<li class="void" style="display:inline;">water (rarely used<span class="numerator">*</span>)</li>
 				<li>metallic enemies</li>
 				<li>hard surfaces</li>
 				<li>red-blooded enemies</li>
@@ -593,28 +614,34 @@ trailDefinition_2 = "Trail_TekBow_Crossline_2"</code></pre>
 				<li><code>IT_LAVA</code></li>
 				<li>tar (<code>IT_SLIME</code>)</li>
 				<li><code>IT_FORCEFIELD</code></li>
-			</ol>
--->		</td>
+			</ol> -->
+		</td>
 	</tr>
 	<tr>
 		<td>onTick</td>
-		<td>happens continuously (unless underwater?)</td>
+		<td>happens continuously, unless underwater</td>
 	</tr>
-	<tr>
+	<tr id="onExpire">
 		<td>onExpire</td>
-		<td>happens when <code>lifeTime</code> runs out (unless underwater?)</td>
+		<td>
+			<p>happens when <code>lifeTime</code> runs out, unless underwater</p>
+			<aside>if a particle hits something at the same time that it expires, both <code>onImpact</code> and <code>onExpire</code> events will occur simultaneously</aside>
+		</td>
 	</tr>
 	<tr>
 		<td>onWaterImpact</td>
-		<td>happens when entering (or exiting?) water</td>
+		<td>
+			<p>happens when entering (or exiting?) water</p>
+			<aside>if an effect is spawned, the last particle will be spawned at the water's surface (the rest will usually spawn slightly underwater, especially for fast projectiles)</aside>
+		</td>
 	</tr>
 	<tr>
 		<td>onWaterTick</td>
-		<td>happens continuously, if underwater</td>
+		<td>happens continuously instead of <code>onTick</code> while underwater</td>
 	</tr>
-	<tr>
+	<tr id="onWaterExpire">
 		<td>onWaterExpire</td>
-		<td>happens when <code>lifeTime</code> runs out, if underwater</td>
+		<td>happens instead of <code>onExpire</code> when <code>lifeTime</code> runs out, if underwater</td>
 	</tr>
 </table>
 <p>Each of these blocks can contain any combination of the following:</p>
@@ -631,6 +658,7 @@ trailDefinition_2 = "Trail_TekBow_Crossline_2"</code></pre>
 		<td>
 			<p>play a <a href="sounds.html">sound</a></p>
 			<p>e.g., <code>sound = "sounds/shaders/bullet_impact_13.ksnd"</code></p>
+			<aside>If an effect is also spawned, the sound will source from the last particle in the spawned kfx file rather than the original particle, except in <code>onTick</code>.</aside>
 		</td>
 	</tr>
 	<tr>
@@ -638,6 +666,7 @@ trailDefinition_2 = "Trail_TekBow_Crossline_2"</code></pre>
 		<td>
 			<p>deal damage, from <a href="defs.html#damageInfo">defs/damageInfo.txt</a></p>
 			<p>e.g., <code>damageClass = "S_Damage_Target_damage_10"</code></p>
+			<p>ignored by <code>onWaterImpact</code></p>
 		</td>
 	</tr>
 </table>

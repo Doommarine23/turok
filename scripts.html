@@ -81,6 +81,7 @@
 				<li><a href="#Objects">Objects</a></li>
 			</ul>
 		</li>
+		<li><a href="#LevelScripts">Level Scripts</a></li>
 		<li><a href="#ClassTree">Class Tree</a></li>
 	</ul>
 </nav>
@@ -108,7 +109,7 @@
 <p>These are part of the scripting engine, but defined inside the game's executable.  They can't be modified, but unlike native classes they can be used from user scripts.  They act as liasons between user scripts and kex classes (e.g., <a href="kActor.html">kActor</a>) or the engine itself (e.g., <a href="kGame.html">kGame</a>), or provide some standard functionality (e.g., <a href="kVec3.html">kVec3</a>).</p>
 <p>Internal script classes are conventionally prefixed with <strong>k</strong>.</p>
 
-<h4>User Scripts</h4>
+<h4 id="UserScripts">User Scripts</h4>
 <p>This is the stuff in the text files in the scripts folder.  We have free reign to modify these, or add our own variables, functions, and classes.</p>
 <p>Actors can optionally have a <a href="ScriptObject.html">user script class</a> assigned with the <code>scriptClass</code> property in defs/actors/.  These classes will be passed a handle to the <a href="kActor.html">internal script object</a> associated with their native kex object in their constructor, which is typically stored in a member variable named <code>self</code>.</p>
 
@@ -170,6 +171,7 @@ self.AnimState().flags ^= ANF_PAUSED;</code></pre>
 <p>A single iteration of the "update" phase is called a <strong>tick</strong>.</p>
 <p>In some engines, the "update" phase occures once per frame.  If the game is designed with a fixed framerate, it will assume a specific, set amount of time has passed since the previous tick.  If the game is designed to allow a variable framerate, it will track the amount of time that's passed since the previous tick, and scale its calculations by that time.</p>
 <p>Turok EX allows a variable framerate, but its tick rate is fixed at 60 Hz.  If the framerate drops below 60 fps, the game will run the update phase multiple times per frame to ensure the overall tick rate remains constant.</p>
+<p>The length of a tick is stored in the global constant <code><a href="#GAME_DELTA_TIME">GAME_DELTA_TIME</a></code>.</p>
 
 
 
@@ -208,7 +210,7 @@ self.AnimState().flags ^= ANF_PAUSED;</code></pre>
 
 <h4 id="Constants">Constants</h4>
 
-<h5 class="funcDec"><span class="unimportant">const</span> float <em>GAME_DELTA_TIME</em> = <em class="defVal">1/60</em></h5>
+<h5 id="GAME_DELTA_TIME" class="funcDec"><span class="unimportant">const</span> float <em>GAME_DELTA_TIME</em> = <em class="defVal">1/60</em></h5>
 <p>length of a <a href="#TickRate">tick</a>, in seconds</p>
 
 <h5 class="funcDec collapse"><span class="unimportant">const</span> float <em>GAME_SECONDS</em> = <em class="defVal">1/15</em></h5>
@@ -234,13 +236,19 @@ self.AnimState().flags ^= ANF_PAUSED;</code></pre>
 
 
 
+<h3 id="LevelScripts">Level Scripts</h3>
+
+<p><a href="level_scripts.html">Level scripts</a> can be used to attach logic to levels themselves.</p>
+
+
+
 <h3 id="ClassTree">Class Tree</h3>
 <ul class="tree">
 	<li><a href="kActor.html">kActor</a>
 		<ul>
-			<li><a href="kWeapon.html">kWeapon</a></li>
-			<li><a href="kPuppet.html">kPuppet</a></li>
 			<li><a href="kAI.html">kAI</a></li>
+			<li><a href="kPuppet.html">kPuppet</a></li>
+			<li><a href="kWeapon.html">kWeapon</a></li>
 		</ul>
 	</li>
 	<li><a href="kActorFactory.html">kActorFactory</a></li>
@@ -258,9 +266,12 @@ self.AnimState().flags ^= ANF_PAUSED;</code></pre>
 	<li><a href="kPlayLoop.html">kPlayLoop</a></li>
 	<li><a href="kQuat.html">kQuat</a></li>
 	<li><a href="kRenderModel.html">kRenderModel</a></li>
-	<li>kScriptObject</li>
-	<li>kSelectionListInt</li>
-	<li>kSelectionListFloat</li>
+	<li><a href="kScriptObject.html">kScriptObject</a></li>
+	<li><a href="kSelectionListInt.html">kSelectionListInt</a>
+		<ul class="unimportant">
+			<li><a href="kSelectionListInt.html#kSelectionListFloat">kSelectionListFloat</a></li>
+		</ul>
+	</li>
 	<li><a href="kStr.html">kStr</a></li>
 	<li><a href="kSys.html">kSys</a></li>
 	<li><a href="kVec3.html">kVec3</a></li>

@@ -70,22 +70,22 @@
 <table>
 	<tr>
 		<td>lifeTime</td>
-		<td>life time of the trail as a whole</td>
+		<td>life time in seconds of the trail as a whole</td>
 	</tr>
 	<tr>
 		<td>fadeOutTime</td>
-		<td></td>
+		<td>fade out the trail as a whole during the last <code>fadeOutTime</code> seconds of <code>lifeTime</code></td>
 	</tr>
 	<tr>
 		<td>edgeLifeTime</td>
-		<td>how long each edge takes to transition from <code>vertex_start</code> to <code>vertex_end</code></td>
+		<td>time in seconds each edge takes to transition from <code>vertex_start</code> to <code>vertex_end</code></td>
 	</tr>
 	<tr>
 		<td>scale</td>
 		<td>vertex position scalar</td>
 	</tr>
-	<tr>
-		<td>bCloseEdges</td>
+	<tr class="void">
+		<td>bCloseEdges <aside class="v1" style="float:right;" title="broken in 2.0 update">2.0</aside></td>
 		<td>
 			<p>connect the last edge to the first edge</p>
 			<p>this is equivalent to duplicating the first edge at the end of the edge list below</p>
